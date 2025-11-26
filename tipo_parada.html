@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Tipo de Parada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        #feedback {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        #feedback.show {
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .divider {
+            margin: 25px 0;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Adicionar Tipo de Parada</h1>
+            <p class="subtitle">Cadastre um novo motivo e classificação de parada</p>
+        </div>
+
+        <form id="tipoParadaForm">
+            <div class="form-group">
+                <label for="nome_motivo">Nome do Motivo:</label>
+                <input type="text" id="nome_motivo" name="nome_motivo" placeholder="Ex: Manutenção Preventiva" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="classificacao">Classificação:</label>
+                <select id="classificacao" name="classificacao" required>
+                    <option value="" disabled selected>Selecione uma opção</option>
+                    <option value="PROGRAMADA">PROGRAMADA</option>
+                    <option value="NAO PROGRAMADA">NÃO PROGRAMADA</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-submit">CADASTRAR</button>
+        </form>
+
+        <div id="feedback"></div>
+        
+        <hr class="divider">
+        <a href="index.html" class="back-link"> Voltar ao Menu Principal</a>
+    </div>
+    
+    <script>
+        const WEBHOOK_URL_TIPO_PARADAS = "https://cloud.activepieces.com/api/v1/webhooks/Em4wRdvNCJqfiWViO1CX3";
+
+        document.getElementById('tipoParadaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const feedback = document.getElementById('feedback');
+            
+            const data = {
+                "nome_motivo": form.nome_motivo.value,
+                "classificacao": form.classificacao.value
+            };
+
+            feedback.textContent = 'Enviando dados...';
+            feedback.style.backgroundColor = '#fff3cd';
+            feedback.style.color = '#856404';
+            feedback.classList.add('show');
+
+            fetch(WEBHOOK_URL_TIPO_PARADAS, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    feedback.textContent = ' Tipo de Parada cadastrado com SUCESSO!';
+                    feedback.style.backgroundColor = '#d4edda';
+                    feedback.style.color = '#155724';
+                    form.reset();
+                } else {
+                    feedback.textContent = ' Erro no envio. Status: ' + response.status;
+                    feedback.style.backgroundColor = '#f8d7da';
+                    feedback.style.color = '#721c24';
+                }
+            })
+            .catch(error => {
+                feedback.textContent = ' Erro de conexão: ' + error.message;
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.color = '#721c24';
+            });
+        });
+    </script>
+</body>
+</html>

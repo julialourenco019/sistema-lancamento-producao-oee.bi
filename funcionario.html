@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Funcionário</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="datetime-local"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="datetime-local"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        #feedback {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        #feedback.show {
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .divider {
+            margin: 25px 0;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👤 Adicionar Funcionário</h1>
+            <p class="subtitle">Cadastre um funcionário e sua alocação em máquina</p>
+        </div>
+
+        <div class="info-box">
+            <strong>ℹ️ Informação:</strong> Este formulário registra qual operador estava operando determinada máquina em um período específico.
+        </div>
+
+        <form id="funcionarioForm">
+            <div class="form-group full-width">
+                <label for="nome_funcionario">Nome do Funcionário:</label>
+                <input type="text" id="nome_funcionario" name="nome_funcionario" placeholder="Ex: João Silva" required>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="matricula">Matrícula:</label>
+                    <input type="text" id="matricula" name="matricula" placeholder="Ex: 12345" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="funcao">Função:</label>
+                    <select id="funcao" name="funcao" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="OPERADOR">OPERADOR</option>
+                        <option value="SETUP">SETUP</option>
+                        <option value="PROGRAMADOR">PROGRAMADOR</option>
+                        <option value="SUPERVISOR">SUPERVISOR</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <h2 style="color: #667eea; font-size: 18px; margin-bottom: 20px; text-align: center;">
+                📍 Alocação em Máquina
+            </h2>
+
+            <div class="form-group">
+                <label for="maquina_id">ID da Máquina:</label>
+                <input type="number" id="maquina_id" name="maquina_id_fk" placeholder="Ex: 1" required>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="data_inicio">Data/Hora Início:</label>
+                    <input type="datetime-local" id="data_inicio" name="timestamp_inicio" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="data_fim">Data/Hora Fim:</label>
+                    <input type="datetime-local" id="data_fim" name="timestamp_fim">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="turno">Turno:</label>
+                <select id="turno" name="turno" required>
+                    <option value="" disabled selected>Selecione o turno</option>
+                    <option value="MANHA">MANHÃ (06:00 - 14:00)</option>
+                    <option value="TARDE">TARDE (14:00 - 22:00)</option>
+                    <option value="NOITE">NOITE (22:00 - 06:00)</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-submit">CADASTRAR</button>
+        </form>
+
+        <div id="feedback"></div>
+        
+        <hr class="divider">
+        <a href="index.html" class="back-link">← Voltar ao Menu Principal</a>
+    </div>
+    
+    <script>
+        const WEBHOOK_URL_FUNCIONARIO = "https://cloud.activepieces.com/api/v1/webhooks/SEU_WEBHOOK_ID_AQUI";
+
+        // Define data/hora atual no campo de início
+        window.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+            document.getElementById('data_inicio').value = localISOTime;
+        });
+
+        document.getElementById('funcionarioForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const feedback = document.getElementById('feedback');
+            
+            const dataInicio = new Date(form.timestamp_inicio.value);
+            const dataFim = form.timestamp_fim.value ? new Date(form.timestamp_fim.value) : null;
+
+            // Validação: data fim não pode ser anterior à data início
+            if (dataFim && dataFim < dataInicio) {
+                feedback.textContent = '⚠️ Erro: A data/hora de fim não pode ser anterior à data/hora de início.';
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.color = '#721c24';
+                feedback.classList.add('show');
+                return;
+            }
+
+            const data = {
+                "nome_funcionario": form.nome_funcionario.value,
+                "matricula": form.matricula.value,
+                "funcao": form.funcao.value,
+                "maquina_id_fk": parseInt(form.maquina_id_fk.value),
+                "timestamp_inicio": form.timestamp_inicio.value,
+                "timestamp_fim": form.timestamp_fim.value || null,
+                "turno": form.turno.value
+            };
+
+            feedback.textContent = '⏳ Enviando dados...';
+            feedback.style.backgroundColor = '#fff3cd';
+            feedback.style.color = '#856404';
+            feedback.classList.add('show');
+
+            fetch(WEBHOOK_URL_FUNCIONARIO, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    feedback.textContent = '✅ Funcionário cadastrado com SUCESSO!';
+                    feedback.style.backgroundColor = '#d4edda';
+                    feedback.style.color = '#155724';
+                    form.reset();
+                    
+                    // Redefine a data/hora atual após reset
+                    const now = new Date();
+                    const offset = now.getTimezoneOffset() * 60000;
+                    const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+                    document.getElementById('data_inicio').value = localISOTime;
+                } else {
+                    feedback.textContent = '❌ Erro no envio. Status: ' + response.status;
+                    feedback.style.backgroundColor = '#f8d7da';
+                    feedback.style.color = '#721c24';
+                }
+            })
+            .catch(error => {
+                feedback.textContent = '❌ Erro de conexão: ' + error.message;
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.color = '#721c24';
+            });
+        });
+    </script>
+</body>
+</html>

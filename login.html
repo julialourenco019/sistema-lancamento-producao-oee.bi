@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Lançamento de Produção</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            font-size: 50px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: -15px;
+            margin-bottom: 25px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+
+        .forgot-password a:hover {
+            color: #764ba2;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        #feedback {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        #feedback.show {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 400;
+            font-size: 13px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="logo"></span>
+            <h1>Bem-vindo</h1>
+            <p class="subtitle">Faça login para acessar o sistema</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="lembrar" name="lembrar">
+                <label for="lembrar">Lembrar-me</label>
+            </div>
+
+            <div class="forgot-password">
+                <a href="#" id="forgotPasswordLink">Esqueceu a senha?</a>
+            </div>
+
+            <button type="submit" class="btn-login">ENTRAR</button>
+        </form>
+
+        <div id="feedback"></div>
+
+        <div class="footer">
+            © 2025 Sistema de Lançamento de Produção
+        </div>
+    </div>
+
+    <script>
+        // Armazenamento em memória para demonstração
+        const credentials = {
+            email: '',
+            senha: '',
+            isAuthenticated: false
+        };
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const feedback = document.getElementById('feedback');
+            const email = form.email.value;
+            const senha = form.senha.value;
+            const lembrar = form.lembrar.checked;
+
+            // Validação básica
+            if (!email || !senha) {
+                feedback.textContent = 'Por favor, preencha todos os campos.';
+                feedback.style.backgroundColor = '#fff3cd';
+                feedback.style.color = '#856404';
+                feedback.classList.add('show');
+                return;
+            }
+
+            // Simulando autenticação
+            feedback.textContent = 'Autenticando...';
+            feedback.style.backgroundColor = '#d1ecf1';
+            feedback.style.color = '#0c5460';
+            feedback.classList.add('show');
+
+            // Simulação de delay de rede
+            setTimeout(() => {
+                // Aqui você pode adicionar validação real com seu backend
+                // Por enquanto, aceita qualquer email/senha válidos
+                
+                if (email.includes('@') && senha.length >= 4) {
+                    credentials.email = email;
+                    credentials.senha = senha;
+                    credentials.isAuthenticated = true;
+
+                    if (lembrar) {
+                        // Simula armazenamento (sem usar localStorage)
+                        credentials.rememberMe = true;
+                    }
+
+                    feedback.textContent = 'Login realizado com sucesso! Redirecionando...';
+                    feedback.style.backgroundColor = '#d4edda';
+                    feedback.style.color = '#155724';
+
+          
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    feedback.textContent = ' E-mail ou senha inválidos. Tente novamente.';
+                    feedback.style.backgroundColor = '#f8d7da';
+                    feedback.style.color = '#721c24';
+                }
+            }, 1000);
+        });
+
+
+        document.getElementById('forgotPasswordLink').addEventListener('click', function(event) {
+            event.preventDefault();
+            const feedback = document.getElementById('feedback');
+            
+            feedback.textContent = ' Instruções de recuperação foram enviadas para o seu e-mail.';
+            feedback.style.backgroundColor = '#d1ecf1';
+            feedback.style.color = '#0c5460';
+            feedback.classList.add('show');
+
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 4000);
+        });
+    </script>
+</body>
+</html>

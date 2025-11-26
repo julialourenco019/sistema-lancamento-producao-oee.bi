@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Máquina</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        #feedback {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        #feedback.show {
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .divider {
+            margin: 25px 0;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Adicionar Máquina</h1>
+            <p class="subtitle">Cadastre uma nova máquina para o sistema de monitoramento</p>
+        </div>
+
+        <form id="maquinaForm">
+            <div class="form-group">
+                <label for="descricao_maquina">Descrição da Máquina:</label>
+                <input type="text" id="descricao_maquina" name="descricao_maquina" placeholder="Ex: Torno CNC #1" required>
+            </div>
+            
+            <button type="submit" class="btn-submit">CADASTRAR</button>
+        </form>
+
+        <div id="feedback"></div>
+        
+        <hr class="divider">
+        <a href="index.html" class="back-link">Voltar ao Menu Principal</a>
+    </div>
+    
+    <script>
+        const WEBHOOK_URL_MAQUINA = "https://cloud.activepieces.com/api/v1/webhooks/9AoZDBUvDKS6SwgkUWep5";
+
+        document.getElementById('maquinaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const feedback = document.getElementById('feedback');
+            
+            const data = {
+                "descricao_maquina": form.descricao_maquina.value
+            };
+
+            feedback.textContent = 'Enviando dados...';
+            feedback.style.backgroundColor = '#fff3cd';
+            feedback.style.color = '#856404';
+            feedback.classList.add('show');
+
+            fetch(WEBHOOK_URL_MAQUINA, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    feedback.textContent = ' Máquina cadastrada com SUCESSO! Você será redirecionado em 3 segundos.';
+                    feedback.style.backgroundColor = '#d4edda';
+                    feedback.style.color = '#155724';
+                    form.reset();
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 3000);
+                } else {
+                    feedback.textContent = ' Erro no envio. Status: ' + response.status;
+                    feedback.style.backgroundColor = '#f8d7da';
+                    feedback.style.color = '#721c24';
+                }
+            })
+            .catch(error => {
+                feedback.textContent = ' Erro de conexão: ' + error.message;
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.color = '#721c24';
+            });
+        });
+    </script>
+</body>
+</html>

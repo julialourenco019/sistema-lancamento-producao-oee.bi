@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Parada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        input[type="datetime-local"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        #feedback {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        #feedback.show {
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .divider {
+            margin: 25px 0;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Adicionar Evento de Parada</h1>
+            <p class="subtitle">Preencha os dados da parada para inserir na tabela PARADAS</p>
+        </div>
+
+        <form id="paradaForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="maquina_id">ID da Máquina:</label>
+                    <input type="number" id="maquina_id" name="maquina_id_fk" placeholder="Ex: 1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo_parada_id">ID Tipo de Parada:</label>
+                    <input type="number" id="tipo_parada_id" name="tipo_parada_id_fk" placeholder="Ex: 2" required>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="duracao">Duração da Parada (HH:MM:SS):</label>
+                    <input type="text" id="duracao" name="duracao_parada_hh_mm_ss" placeholder="Ex: 00:30:00" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="data_evento">Data e Hora do Evento:</label>
+                    <input type="datetime-local" id="data_evento" name="timestamp_evento" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-submit">CADASTRAR</button>
+        </form>
+
+        <div id="feedback"></div>
+        
+        <hr class="divider">
+        <a href="index.html" class="back-link"> Voltar ao Menu Principal</a>
+    </div>
+    
+    <script>
+        const WEBHOOK_URL_PARADAS = "https://cloud.activepieces.com/api/v1/webhooks/320hEu9frqZ6UF6ifqnGT";
+
+        document.getElementById('paradaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const feedback = document.getElementById('feedback');
+            
+            const data = {
+                "maquina_id_fk": parseInt(form.maquina_id_fk.value),
+                "tipo_parada_id_fk": parseInt(form.tipo_parada_id_fk.value),
+                "duracao_parada_hh_mm_ss": form.duracao_parada_hh_mm_ss.value,
+                "timestamp_evento": form.timestamp_evento.value
+            };
+
+            feedback.textContent = 'Enviando dados...';
+            feedback.style.backgroundColor = '#fff3cd';
+            feedback.style.color = '#856404';
+            feedback.classList.add('show');
+
+            fetch(WEBHOOK_URL_PARADAS, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    feedback.textContent = ' Lançamento realizado com SUCESSO!';
+                    feedback.style.backgroundColor = '#d4edda';
+                    feedback.style.color = '#155724';
+                    form.reset();
+                } else {
+                    feedback.textContent = ' Erro no envio. Status: ' + response.status;
+                    feedback.style.backgroundColor = '#f8d7da';
+                    feedback.style.color = '#721c24';
+                }
+            })
+            .catch(error => {
+                feedback.textContent = ' Erro de conexão: ' + error.message;
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.color = '#721c24';
+            });
+        });
+    </script>
+</body>
+</html>
